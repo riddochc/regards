@@ -1,0 +1,72 @@
+= regards
+Chris Riddoch <riddochc@gmail.com>
+:language: ruby
+:homepage: https://github.com/riddochc/regards
+:revnumber: 0.0.1
+:revdate: 2017-08-07
+
+== Description
+
+Regards are like facets - a collection of utility functions, to refine with.
+
+Regards is a library of utility functions, in the style of the facets gem.
+Being implemented as refinements, these can modify core ruby classes for the duration of the file they're used in, without causing conflicts in other code.
+Become more refined by having regards, not concerns.
+
+== Requirements
+
+* Ruby
+
+== Installation
+
+gem install regards
+
+== Use
+
+An example use:
+
+----
+# Add the number? method to the String class:
+require "regards/string/to_numeric"
+using Regards::StringRefinements
+
+# Test whether some strings are numbers
+["a", "73", "*"].map {|s| s.number? } # => [false, true, false]
+----
+
+If you run +pry+ or another REPL, you may encounter an error if you try +using+ the refinement:
+
+----
+RuntimeError: main.using is permitted only at toplevel
+from (pry):1:in `using'
+----
+
+Unfortunately, this is hard to work around. Placing the +using+ statement in your +~/.pryrc+ is insufficient, as is evaluating it when pry starts with the +-e+ parameter.
+
+As YARD currently does not index refinements, documentation for each submodule of the +Regards+ module follows.
+
+=== StringRefinements
+
+Refines the String class with the following methods:
+
+number?:: Returns true if the string can be converted to a number, false otherwise. Uses to_numeric.
+to_numeric:: For strings representing numbers, returns an appropriate +Integer+, +Float+, +Rational+, +Complex+, +Float::INFINITY+, +Float::-INFINITY+, +Float::NaN+ (when the string is exactly "NaN"), or +Complex+. For any other string, returns nil.
+
+== Contributing
+
+Please do!
+
+You may submit a pull request at the project's github site or email patches to the maintainer.
+
+Be courteous and professional. Criticize code, not people.
+
+== Contributors
+
+* Chris Riddoch
+
+== License
+
+Copyright © 2017 Chris Riddoch
+
+This code is licensed under the GPLv3. See LICENSE for details.
+

@@ -1,0 +1,5 @@
+*.gem
+.starscope.db
+cscope.files
+cscope.out
+tags
