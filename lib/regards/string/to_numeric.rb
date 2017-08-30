@@ -6,44 +6,46 @@
 
 module Regards
   module StringRefinements
-    refine String do
-      ::REFININGS ||= {}
-      ::REFININGS["String#number?"] = true
-      ::REFININGS["String#to_numeric"] = true
+    module Numeric
+      refine String do
+        ::REFININGS ||= {}
+        ::REFININGS["String#number?"] = true
+        ::REFININGS["String#to_numeric"] = true
 
-      def number?
-        begin
-          !self.to_numeric.nil?
-        rescue
-          false
-        end
-      end
-
-      def to_numeric
-        begin
-          Integer(self)
-        rescue ArgumentError
+        def number?
           begin
-            Rational(self)
-          rescue ZeroDivisionError
-            nil
+            !self.to_numeric.nil?
+          rescue
+            false
+          end
+        end
+
+        def to_numeric
+          begin
+            Integer(self)
           rescue ArgumentError
             begin
-              Float(self)
+              Rational(self)
+            rescue ZeroDivisionError
+              nil
             rescue ArgumentError
               begin
-                case self
-                when "Infinity"
-                  Float::INFINITY
-                when "-Infinity"
-                  -Float::INFINITY
-                when "NaN" # sort of?
-                  Float::NAN
-                else
-                  Complex(self)
-                end
+                Float(self)
               rescue ArgumentError
-                nil
+                begin
+                  case self
+                  when "Infinity"
+                    Float::INFINITY
+                  when "-Infinity"
+                    -Float::INFINITY
+                  when "NaN" # sort of?
+                    Float::NAN
+                  else
+                    Complex(self)
+                  end
+                rescue ArgumentError
+                  nil
+                end
               end
             end
           end

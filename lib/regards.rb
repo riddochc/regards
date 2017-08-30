@@ -17,6 +17,7 @@ class Object
   end
 end
 
+require "regards/string"
 
 #class Kernel
 #  def is_refined_with?(mth)

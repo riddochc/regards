@@ -28,7 +28,7 @@ An example use:
 ----
 # Add the number? method to the String class:
 require "regards/string/to_numeric"
-using Regards::StringRefinements
+using Regards::StringRefinements::Numeric
 
 # Test whether some strings are numbers
 ["a", "73", "*"].map {|s| s.number? } # => [false, true, false]
