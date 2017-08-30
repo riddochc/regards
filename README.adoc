@@ -45,12 +45,18 @@ Unfortunately, this is hard to work around. Placing the +using+ statement in you
 
 As YARD currently does not index refinements, documentation for each submodule of the +Regards+ module follows.
 
-=== StringRefinements
+=== StringRefinements::Numeric
 
 Refines the String class with the following methods:
 
 number?:: Returns true if the string can be converted to a number, false otherwise. Uses to_numeric.
 to_numeric:: For strings representing numbers, returns an appropriate +Integer+, +Float+, +Rational+, +Complex+, +Float::INFINITY+, +Float::-INFINITY+, +Float::NaN+ (when the string is exactly "NaN"), or +Complex+. For any other string, returns nil.
+
+=== StringRefinements::Unhexdump
+
+Refines the String class with the following methods:
+
+unhexdump:: Returns a binary string based on the value of hexadecimal characters in the current string.  Ignores whitespace, returns nil on strings with any non-hexadecimal, non-whitespace characters.
 
 == Contributing
 
