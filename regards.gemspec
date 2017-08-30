@@ -13,6 +13,7 @@ Gem::Specification.new do |s|
                    "README.adoc",
                    "Rakefile",
                    "lib/regards/string/to_numeric.rb",
+                   "lib/regards/string/unhexdump.rb",
                    "lib/regards/string.rb",
                    "lib/regards/version.rb",
                    "lib/regards.rb",

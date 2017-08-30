@@ -8,12 +8,14 @@ $:.unshift(File.join(File.dirname(File.expand_path(__FILE__)), "../lib/"))
 
 require_relative "../lib/regards"
 require_relative "../lib/regards/string/to_numeric"
+require_relative "../lib/regards/string/unhexdump"
 
 gem 'minitest'
 require 'minitest/autorun'
 require 'minitest/hooks/default'
 
 using Regards::StringRefinements::Numeric
+using Regards::StringRefinements::Unhexdump
 
 def numeric_must_be(str, result)
   str.to_numeric.must_equal result
@@ -65,6 +67,32 @@ describe "String" do
       "NaN".to_numeric.nan?.must_equal true
     end
   end
+
+  describe ".unhexdump" do
+    it "isn't found by respond_to?, because it's a refinement" do
+      "".respond_to?(:number?).must_equal false
+    end
+
+    it "is found by refined_with?" do
+      "".refined_with?(:unhexdump).must_equal true
+    end
+
+    it "returns nil on strings containing non-hexadecimal, non-space characters" do
+      assert_nil "f0z1".unhexdump
+    end
+
+    it 'returns a null byte for "00"' do
+      "00".unhexdump.must_equal "\x00"
+    end
+
+    it "returns an empty string when called on an empty string" do
+      "".unhexdump.must_equal ""
+    end
+
+    it %Q{returns "\\x01\\x02\\x03" when given "01 02 03"} do
+      "01 02 03".unhexdump.must_equal "\x01\x02\x03"
+    end
+
   end
 end
 
