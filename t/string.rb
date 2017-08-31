@@ -66,6 +66,11 @@ describe "String" do
       "NaN".to_numeric.respond_to?(:nan?)
       "NaN".to_numeric.nan?.must_equal true
     end
+
+    it "returns complex numbers" do
+      "3+3i".to_numeric.must_equal Complex(3,3)
+      "5i".to_numeric.must_equal Complex(0,5)
+    end
   end
 
   describe ".unhexdump" do
