@@ -58,6 +58,44 @@ Refines the String class with the following methods:
 
 unhexdump:: Returns a binary string based on the value of hexadecimal characters in the current string.  Ignores whitespace, returns nil on strings with any non-hexadecimal, non-whitespace characters.
 
+=== StringRefinements::Rewrite
+
+Refines the string class with the following methods:
+
+rewrite:: Takes a hash of regexes for keys and callable objects as values. Creates an edited version of the string by using the callable to create a new version of the string for each matching regex.  Think of it as grouping up repeated calls to +.sub()+ into one method.
+
+Example:
+
+----
+subs= { /foo/ => ->(m) { m.pre_match + "blah" + m.post_match },
+        /bar/ => ->(m) { m.pre_match + "baz" + m.post_match } }
+
+"one foo for a bar plz".rewrite(subs)
+# => "one blah for a baz plz"
+----
+
+rewrite_all:: Continues applying +rewrite()+ to the string until the string is left unchanged by further calls to +rewrite()+.  +.rewrite()+ is to +.sub()+ as +.rewrite_all+ is to +.gsub()+. 
+
+Note that +rewrite_all()+ can potentially loop infinitely if the edited version of the string continues to be matchable by the regexes!
+
+Example:
+
+----
+subs = { /[aoeui]+/ => ->(m) { m.pre_match + m[0].upcase + m.post_match } }
+"a test string".rewrite_all(subs)
+# => "A tEst strIng"
+
+subs = { /[aoeui]/  => ->(m) { m.pre_match + "(1)" + m.post_match },
+         /[tsr]/    => ->(m) { m.pre_match + "[0]" + m.post_match } }
+"a test string".rewrite_all(subs)
+# => "(1) [0](1)[0][0] [0][0][0](1)ng"
+
+subs = { /[aoeui]/  => ->(m) { m.post_match + "(1)" + m.pre_match },
+         /[tsr]/    => ->(m) { m.post_match + "[0]" + m.pre_match } }
+"a test string".rewrite_all(subs)
+# => "[0]ng(1)[0] (1)[0](1)[0] [0][0]"
+----
+
 == Contributing
 
 Please do!

@@ -6,4 +6,5 @@
 
 require "regards/string/to_numeric"
 require "regards/string/unhexdump"
+require "regards/string/rewrite"
 

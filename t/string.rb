@@ -9,6 +9,7 @@ $:.unshift(File.join(File.dirname(File.expand_path(__FILE__)), "../lib/"))
 require_relative "../lib/regards"
 require_relative "../lib/regards/string/to_numeric"
 require_relative "../lib/regards/string/unhexdump"
+require_relative "../lib/regards/string/rewrite"
 
 gem 'minitest'
 require 'minitest/autorun'
@@ -16,6 +17,7 @@ require 'minitest/hooks/default'
 
 using Regards::StringRefinements::Numeric
 using Regards::StringRefinements::Unhexdump
+using Regards::StringRefinements::Rewrite
 
 def numeric_must_be(str, result)
   str.to_numeric.must_equal result
@@ -97,7 +99,46 @@ describe "String" do
     it %Q{returns "\\x01\\x02\\x03" when given "01 02 03"} do
       "01 02 03".unhexdump.must_equal "\x01\x02\x03"
     end
+  end
 
+  describe ".rewrite" do
+    it "should replace the string with result of lambda if pattern is found" do
+      subs = { /foo/ => ->(m) { "replaced" } }
+      "one two".rewrite(subs).must_equal "one two"
+      "one foo".rewrite(subs).must_equal "replaced"
+    end
+
+    it "should only apply the substitution once" do
+      subs = { /[aoeui]+/ => ->(m) { m.pre_match + m[0].upcase + m.post_match } }
+      "a test string".rewrite(subs).must_equal "A test string"
+    end
+
+    it "should make multiple changes: foo changed to blah, bar changed to baz" do
+      subs= { /foo/ => ->(m) { m.pre_match + "blah" + m.post_match },
+              /bar/ => ->(m) { m.pre_match + "baz" + m.post_match }
+      }
+
+      "one foo for a bar plz".rewrite(subs).must_equal "one blah for a baz plz"
+    end
+  end
+
+  describe ".rewrite_all" do
+    it "should apply the substitution on every match of a pattern" do
+      subs = { /[aoeui]+/ => ->(m) { m.pre_match + m[0].upcase + m.post_match } }
+      "a test string".rewrite_all(subs).must_equal "A tEst strIng"
+    end
+
+    it "should apply multiple changes to the string" do
+      subs = { /[aoeui]/  => ->(m) { m.pre_match + "(1)" + m.post_match },
+               /[tsr]/    => ->(m) { m.pre_match + "[0]" + m.post_match } }
+      "a test string".rewrite_all(subs).must_equal  "(1) [0](1)[0][0] [0][0][0](1)ng"
+    end
+
+    it "should be able to manipulate the whole string, not just the matched portion." do
+      subs = { /[aoeui]/  => ->(m) { m.post_match + "(1)" + m.pre_match },
+               /[tsr]/    => ->(m) { m.post_match + "[0]" + m.pre_match } }
+      "a test string".rewrite_all(subs).must_equal "[0]ng(1)[0] (1)[0](1)[0] [0][0]"
+    end
   end
 end
 
