@@ -109,7 +109,7 @@ closing:: A regular expression matching at the end of the quoted portion. Defaul
 normal:: A regular expression identifying a non-escaped character within the string. Defaults to /[^"\\]/
 special:: A regular expression for escaped characters within the string. Defaults to /\\./
 
-The simplest way to understand this is to look at the behavior of the default "normal" with the "special" regexes, which is for identifying quoted strings.
+The simplest way to understand this is to look at the behavior of the default "normal" with the "special" regexes, which is for identifying the text within quoted regions.
 The presence of a double-quote normally is an indication that the current point is either the beginning or the end of a quoted region.
 If the region itself contains a double-quote, you need some means of indicating that it should be treated differently from normal.
 The most common way of doing this is by preceding the double-quote character with a backslash.
