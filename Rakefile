@@ -150,7 +150,9 @@ task :gemspec => [:git_check, :versionfile] do
   preslash_subgems = Regexp.new("^" + Regexp.union(dev_dependencies.keys + dependencies.keys).to_s + "/")
   subgem_dependencies = requires.grep(preslash_subgems)
 
-  missing_deps = (requires - builtin_requireables - dependencies.keys - dev_dependencies.keys - subgem_dependencies)
+  lib_files = filtered_project_files().grep(%r{^lib/}).map {|f| f.sub(/^lib\//, "").sub(/\.rb$/, "") }
+
+  missing_deps = (requires - builtin_requireables - dependencies.keys - dev_dependencies.keys - subgem_dependencies - lib_files)
   if missing_deps.length > 0
     puts "There may be some dependencies not listed in project.yml:"
     puts missing_deps.join(", ")
@@ -222,11 +224,11 @@ spec_task = proc do |description, name, file, coverage|
   end
 end
 
-task :spec => [:spec_string]
+task :spec => [:spec_string, :spec_regexp]
 task :test => [:spec]
 
 spec_task.call("Test string methods", :spec_string, "t/string.rb")
-
+spec_task.call("Test regexp methods", :spec_regexp, "t/regexp.rb")
 
 desc "Check syntax of all ruby files"
 task :check_syntax do

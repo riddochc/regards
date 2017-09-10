@@ -15,7 +15,7 @@ Become more refined by having regards, not concerns.
 
 == Requirements
 
-* Ruby
+* Ruby (tested with 2.4.2)
 
 == Installation
 
@@ -94,6 +94,76 @@ subs = { /[aoeui]/  => ->(m) { m.post_match + "(1)" + m.pre_match },
          /[tsr]/    => ->(m) { m.post_match + "[0]" + m.pre_match } }
 "a test string".rewrite_all(subs)
 # => "[0]ng(1)[0] (1)[0](1)[0] [0][0]"
+----
+
+=== RegexpRefinements::Unroll
+
+==== Class method: Regexp.unroll
+
+unroll:: Construct a regular expression for matching quoted portions of a string.
+
+Named parameters:
+
+opening:: A regular expression matching at the beginning of the quoted portion. Defaults to /"/
+closing:: A regular expression matching at the end of the quoted portion. Defaults to /"/
+normal:: A regular expression identifying a non-escaped character within the string. Defaults to /[^"\\]/
+special:: A regular expression for escaped characters within the string. Defaults to /\\./
+
+The simplest way to understand this is to look at the behavior of the default "normal" with the "special" regexes, which is for identifying quoted strings.
+The presence of a double-quote normally is an indication that the current point is either the beginning or the end of a quoted region.
+If the region itself contains a double-quote, you need some means of indicating that it should be treated differently from normal.
+The most common way of doing this is by preceding the double-quote character with a backslash.
+As a consequence, a backslash can be considered the mechanism by which the following character should be treated differently from normal.
+
+* A "normal" character is anything other than a backslash (\) or a double-quote (").
+* A "special" character is a backslash followed by some other character.
+
+The named capture 'body' in a MatchData object will contain the matched text between the 'opening' and 'closing'.
+
+The +.unroll()+ constructor is based on a technique described in "Mastering Regular Expressions" by Jeffrey Friedl.
+
+Example uses, in a pry session:  
+
+----
+> s = 'The reporter said, "Tell me about your work."'
+> rx = Regexp.unroll()
+> m = rx.match(s)
+> puts m[:body]
+Tell me about your work.
+
+> s = %Q{The reporter said, "He said he's an \\"engineer\\" of some sort."}
+> puts s
+The reporter said, "He said he's an \"engineer\" of some sort."
+> m = rx.match(s)
+> puts m[:body]
+He said he's an \"engineer\" of some sort.
+
+> s = "something (one \\) two) in parentheses."
+> rx = Regexp.unroll(opening: /\(/, closing: /\)/, normal: /[^\(\)\\]/)
+> m = rx.match(s)
+> puts m[:body]
+one \) two
+----
+
+Remember that %Q{} is just another way to define a string in Ruby, and behaves similarly to ""; likewise, %q{} behaves like ''.
+
+==== Classmethod: Regexp.unroll_and_unescape
+
+unroll_and_unescape:: Match the quoted portion of the string and globally substitute the escaped characters (matching the 'special' regex) with the block.
+
+This method takes the same parameters as unroll() and an additional block.
+
+Example uses, in a pry session:
+
+----
+> s = %Q{The reporter said, "He said he's an \\"engineer\\" of some sort."}
+> puts Regexp.unroll_and_unescape(s) {|c| "-#{c[-1]}-" }
+He said he's an -"-engineer-"- of some sort.
+> s = %Q{The reporter said, "He said he's an ""engineer"" of some sort."}
+> puts Regexp.unroll_and_unescape(s, normal: /[^"]/, special: /\"\"/) {|c| "`" }
+He said he's an `engineer` of some sort.
+> puts Regexp.unroll_and_unescape("For the (scheme \\( fans \\) out) there", opening: /\(/, closing: /\)/, normal: /[^\(\)\\]/) {|ex| ".#{ex[-1]}." }
+scheme .(. fans .). out
 ----
 
 == Contributing

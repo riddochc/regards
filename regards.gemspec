@@ -7,11 +7,15 @@ Gem::Specification.new do |s|
   s.description = "Regards is a library of utility functions, in the style of the facets gem. Being implemented as refinements, these can modify core ruby classes for the duration of the file they&#8217;re used in, without causing conflicts in other code. Become more refined by having regards, not concerns."
   s.authors     = ["Chris Riddoch"]
   s.email       = "riddochc@gmail.com"
-  s.date        = "2017-08-29"
+  s.date        = "2017-09-10"
   s.files       = ["Gemfile",
                    "LICENSE",
                    "README.adoc",
                    "Rakefile",
+                   "console",
+                   "lib/regards/regexp/unroll.rb",
+                   "lib/regards/regexp.rb",
+                   "lib/regards/string/rewrite.rb",
                    "lib/regards/string/to_numeric.rb",
                    "lib/regards/string/unhexdump.rb",
                    "lib/regards/string.rb",
@@ -19,6 +23,7 @@ Gem::Specification.new do |s|
                    "lib/regards.rb",
                    "project.yaml",
                    "regards.gemspec",
+                   "t/regexp.rb",
                    "t/string.rb"]
   s.homepage    = "https://github.com/riddochc/regards"
 
